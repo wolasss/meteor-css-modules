@@ -1,39 +1,39 @@
 /* globals Package */
 Package.describe({
-  name: 'nathantreid:css-modules',
-  version: '4.1.0',
+  name: 'wolasss:css-modules',
+  version: '5.0.0',
   summary: 'CSS modules implementation. CSS for components!',
-  git: 'https://github.com/nathantreid/meteor-css-modules.git',
+  git: 'https://github.com/wolasss/meteor-css-modules',
   documentation: 'README.md'
 });
 
 Package.registerBuildPlugin({
   name: 'mss',
   use: [
-    'babel-compiler@7.0.0',
-    'ecmascript@0.10.0',
-    'caching-compiler@1.1.7_1',
-    'underscore@1.0.9',
+    'babel-compiler@7.7.0',
+    'ecmascript@0.15.3',
+    'caching-compiler@1.2.2',
+    'underscore@1.0.10',
   ],
   npmDependencies: {
-    'app-module-path': '1.0.4',
-    'camelcase': '3.0.0',
-    'cjson': '0.3.3',
-    'colors': '1.1.2',
-    'common-tags': '1.3.1',
-    'css-modules-loader-core': '1.0.0',
+    'app-module-path': '2.2.0',
+    'camelcase': '6.3.0',
+    'cjson': '0.5.0',
+    'colors': '1.4.0',
+    'common-tags': '1.8.2',
+    'css-modules-loader-core': '1.1.0',
     'json-to-regex': '0.0.2',
     'es6-template-strings': '2.0.1',
     'hasha': '3.0.0',
-    'lru-cache': '2.6.4',
+    'lru-cache': '7.4.0',
     'path-is-absolute': '1.0.0',
-    'postcss': '5.1.2',
-    'postcss-modules-local-by-default': '1.1.1',
-    'postcss-modules-extract-imports': '1.0.1',
-    'postcss-modules-scope': '1.0.2',
-    'postcss-modules-values': '1.2.2',
+    'postcss': '8.4.6',
+    'postcss-modules-local-by-default': '4.0.0',
+    'postcss-modules-extract-imports': '3.0.0',
+    'postcss-modules-scope': '3.0.0',
+    'postcss-modules-values': '2.2.2',
     'ramda': '0.19.0',
-    'recursive-readdir': '1.3.0',
+    'recursive-readdir': '2.2.2',
     'shorthash': '0.0.2',
     'string-template': '1.0.0',
   },
@@ -61,7 +61,7 @@ Package.onUse(function (api) {
   api.versionsFrom('1.6.1');
   api.use('isobuild:compiler-plugin@1.0.0');
   api.use([
-    'ecmascript@0.10.0',
+    'ecmascript@0.15.3',
   ]);
 
   api.mainModule('package/main.js');

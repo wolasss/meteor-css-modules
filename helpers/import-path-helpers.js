@@ -1,9 +1,6 @@
 import cjson from 'cjson';
 import path from 'path';
-import pathIsAbsolute from 'path-is-absolute';
 import fs from 'fs';
-
-if (!path.isAbsolute) path.isAbsolute = pathIsAbsolute;
 
 let basePath = getBasePath(process.cwd().replace(/\\/g, '/'));
 
