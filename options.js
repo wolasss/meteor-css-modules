@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 
-import R from 'ramda';
+import * as R from 'ramda';
 import checkNpmPackage from './check-npm-package';
 import { createReplacer } from './text-replacer';
 import sha1 from './sha1';
@@ -65,13 +65,13 @@ function loadOptions() {
   options = options || {};
 
   options = processGlobalVariables(options);
-  options = R.merge(getDefaultOptions(), options || {});
+  options = R.mergeAll([getDefaultOptions(), options || {}]);
 
   processPluginOptions(options.postcssPlugins);
 
-  if (!Meteor.isDevelopment) {
-    options.missingClassErrorLevel = false;
-  }
+  // if (!Meteor.isDevelopment) {
+  //   options.missingClassErrorLevel = false;
+  // }
 
   options.hash = sha1(JSON.stringify(options));
   if (options.hash === pluginOptions.hash) {

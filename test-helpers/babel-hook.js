@@ -1,25 +1,14 @@
-// This file is required in mocha.opts
-// The only purpose of this file is to ensure
-// the babel transpiler is activated prior to any
-// test code, and using the same babel options
-require('babel-register')({
-  presets: [
-    'es2015'
-  ],
-  plugins: [
-    'transform-object-rest-spread',
-    'transform-es2015-destructuring',
-    'syntax-async-functions',
-    'syntax-async-generators',
-    'transform-regenerator',
-    // 'babel-project-relative-import',
-    // {
-    //   'importPathPrefix': '/'
-    // },
+const register = require('@babel/register').default;
 
-  ]
-})
-
-require('babel-polyfill')
-
-require('./import-path-helpers.stub');
+register({ presets: [
+    [
+              "@babel/preset-env"
+    ]
+],
+plugins: [
+  '@babel/plugin-proposal-object-rest-spread',
+  '@babel/plugin-transform-destructuring',
+  'syntax-async-functions',
+  'syntax-async-generators',
+  'transform-regenerator'
+] });

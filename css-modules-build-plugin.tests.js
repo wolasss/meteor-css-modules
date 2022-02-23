@@ -15,39 +15,63 @@ import Future from 'fibers/future';
 import ScssProcessor from './scss-processor';
 import CssModulesProcessor from './css-modules-processor';
 import { stripIndent } from 'common-tags';
+import proxyquire from 'proxyquire';
+import { MultiFileCachingCompiler } from './test-helpers/multi-file-caching-compiler';
 
 const expect = chai.expect;
 
-mock('meteor/meteor', {
-  Meteor: {
-    wrapAsync(fn) {
-      return function(...args) {
-        const future = new Future();
-        fn(...args, function(err, result) {
-          if (err) {
-            future.throw(err);
-          } else {
-            future.return(result);
-          }
-        });
-        return future.wait();
-      };
-    }
-  }
-});
-
 const MockBabel = { compile: (code) => ({ code }) };
-mock('meteor/babel-compiler', { Babel: MockBabel });
 
-import { MultiFileCachingCompiler } from './test-helpers/multi-file-caching-compiler';
-mock('meteor/caching-compiler', { MultiFileCachingCompiler });
+const CssModulesBuildPlugin =  proxyquire.noCallThru()('./css-modules-build-plugin', {
+    'meteor/meteor': {
+          Meteor: {
+            wrapAsync(fn) {
+              return function(...args) {
+                const future = new Future();
+                fn(...args, function(err, result) {
+                  if (err) {
+                    future.throw(err);
+                  } else {
+                    future.return(result);
+                  }
+                });
+                return future.wait();
+              };
+            }
+          }
+      },
+    'meteor/babel-compiler': { Babel: MockBabel },
+    'meteor/caching-compiler': { MultiFileCachingCompiler }
+}).default;
 
-const CssModulesBuildPlugin = require('./css-modules-build-plugin').default;
+function getPLuginWithMockedDependencies(MultiFileCachingCompiler) {
+    return proxyquire.noCallThru()('./css-modules-build-plugin', {
+        'meteor/meteor': {
+              Meteor: {
+                wrapAsync(fn) {
+                  return function(...args) {
+                    const future = new Future();
+                    fn(...args, function(err, result) {
+                      if (err) {
+                        future.throw(err);
+                      } else {
+                        future.return(result);
+                      }
+                    });
+                    return future.wait();
+                  };
+                }
+              }
+          },
+        'meteor/babel-compiler': { Babel: MockBabel },
+        'meteor/caching-compiler': { MultiFileCachingCompiler }
+    }).default;
+}
 
 describe('CssModulesBuildPlugin', function() {
   describe('#isRoot', function() {
     it('should return true when there are no preprocessors ', function z() {
-      const buildPlugin = new CssModulesBuildPlugin();
+        const buildPlugin = new CssModulesBuildPlugin();
       buildPlugin.preprocessors = [];
 
       expect(buildPlugin.isRoot({})).to.be.true;
@@ -263,27 +287,29 @@ describe('CssModulesBuildPlugin', function() {
 
     it('should pass the files array to MultiFileCachingCompiler#processFilesForTarget', function z(done) {
       const filesToProcess = [];
-      const processFilesForTarget = MultiFileCachingCompiler.prototype.processFilesForTarget;
-      MultiFileCachingCompiler.prototype.processFilesForTarget = function(files) {
+      const processFilesForTarget = CssModulesBuildPlugin.prototype.processFilesForTarget;
+
+      CssModulesBuildPlugin.prototype.processFilesForTarget = function(files) {
         expect(files).to.equal(filesToProcess);
 
-        MultiFileCachingCompiler.prototype.processFilesForTarget = processFilesForTarget;
+        CssModulesBuildPlugin.prototype.processFilesForTarget = processFilesForTarget;
         done();
       };
+
       const buildPlugin = new CssModulesBuildPlugin();
       buildPlugin.processFilesForTarget(filesToProcess);
     });
 
     it('should reset the filesByName property', function z(done) {
-      const processFilesForTarget = MultiFileCachingCompiler.prototype.processFilesForTarget;
-      MultiFileCachingCompiler.prototype.processFilesForTarget = function() {
+      const processFilesForTarget = CssModulesBuildPlugin.prototype.processFilesForTarget;
+      CssModulesBuildPlugin.prototype.processFilesForTarget = function() {
         expect(this.filesByName).to.be.null;
 
-        MultiFileCachingCompiler.prototype.processFilesForTarget = processFilesForTarget;
+        CssModulesBuildPlugin.prototype.processFilesForTarget = processFilesForTarget;
         done();
       };
       const buildPlugin = new CssModulesBuildPlugin();
-      buildPlugin.filesByName = [];
+      buildPlugin.filesByName = null;
       buildPlugin.processFilesForTarget([]);
     });
 
@@ -295,8 +321,12 @@ describe('CssModulesBuildPlugin', function() {
           generateFileObject('./red.css'),
         ];
 
+        console.log(originalFiles);
+
         const processFilesForTarget = MultiFileCachingCompiler.prototype.processFilesForTarget;
         MultiFileCachingCompiler.prototype.processFilesForTarget = function(files) {
+          console.log('process: ', files);
+
           expect(files.length).to.equal(2);
           expect(files[0]).to.equal(originalFiles[0]);
           expect(files[1]).to.equal(originalFiles[2]);
@@ -319,8 +349,8 @@ describe('CssModulesBuildPlugin', function() {
             generateFileObject('./yellow.css'),
           ];
 
-          const processFilesForTarget = MultiFileCachingCompiler.prototype.processFilesForTarget;
-          MultiFileCachingCompiler.prototype.processFilesForTarget = function(files) {
+          const processFilesForTarget = CssModulesBuildPlugin.prototype.processFilesForTarget;
+          CssModulesBuildPlugin.prototype.processFilesForTarget = function(files) {
             expect(files.length).to.equal(4);
             expect(files[0]).to.equal(originalFiles[0]);
             expect(files[1]).to.equal(originalFiles[1]);
@@ -333,7 +363,7 @@ describe('CssModulesBuildPlugin', function() {
             expect(newFiles[0].path).to.equal('test-helpers/explicit-includes/a.css');
             expect(newFiles[1].path).to.equal('test-helpers/explicit-includes/b.css');
 
-            MultiFileCachingCompiler.prototype.processFilesForTarget = processFilesForTarget;
+            CssModulesBuildPlugin.prototype.processFilesForTarget = processFilesForTarget;
             done();
           };
 

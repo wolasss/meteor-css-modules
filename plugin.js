@@ -41,7 +41,7 @@ function monkeyPatchToHandleCssExtension() {
          */
         if (('css' in this._byExtension) && 'css' in otherSet._byExtension) { // && sp.isopack.displayName() === 'meteor')
           const previouslyRegisteredSourceProcessor = this._byExtension.css[0];
-          if (previouslyRegisteredSourceProcessor.isopack.displayName() === 'meteor' && otherSet._myPackageDisplayName === 'nathantreid:css-modules') {
+          if (previouslyRegisteredSourceProcessor.isopack.displayName() === 'meteor' && otherSet._myPackageDisplayName === 'wolasss:css-modules') {
             this.allSourceProcessors.splice(this.allSourceProcessors.indexOf(previouslyRegisteredSourceProcessor), 1);
             delete this._byExtension.css;
           }

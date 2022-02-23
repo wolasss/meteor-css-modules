@@ -268,12 +268,12 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     function addMissingStylesHandler(stylesJson, filePath, isLegacy) {
       if (!isLegacy && pluginOptions.missingClassErrorLevel) {
         const logFunction = `console.${pluginOptions.missingClassErrorLevel}`;
-        return `new Proxy(${stylesJson}, { 
+        return `new Proxy(${stylesJson}, {
           get: function(target, name) {
             if (typeof name === 'symbol') {
               return;
             }
-            
+
             var ignoredProperties = [
               'toJSON',
               'state',
@@ -283,8 +283,8 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
               Symbol.toStringTag,
               ${(pluginOptions.missingClassIgnoreList).map(JSON.stringify).join(',')}
             ];
-            
-            return name in target 
+
+            return name in target
               ? target[name]
               : ignoredProperties.indexOf(name) === -1
                 ? ${logFunction}(name, ': CSS module class not found in ${filePath}')

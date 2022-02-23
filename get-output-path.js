@@ -1,5 +1,5 @@
 /* globals Npm */
-import R from 'ramda';
+import * as R from 'ramda';
 import path from 'path';
 import format from 'string-template';
 

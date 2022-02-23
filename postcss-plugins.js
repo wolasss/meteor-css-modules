@@ -3,7 +3,7 @@ let pluginOptions = pluginOptionsWrapper.options;
 import fs from 'fs';
 import cjson from 'cjson';
 import path from 'path';
-import R from 'ramda';
+import * as R from 'ramda';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import applyTemplateString from 'es6-template-strings';
 import hasha from 'hasha';
@@ -72,7 +72,7 @@ function loadPlugins(options) {
 
     var pluginEntryOptions = pluginEntry[1];
     if (options.globalVariablesJs && packageName === 'postcss-simple-vars') {
-      pluginEntryOptions = R.merge({ variables: options.globalVariablesJs }, pluginEntryOptions);
+      pluginEntryOptions = R.mergeAll([{ variables: options.globalVariablesJs }, pluginEntryOptions]);
     }
     if (pluginEntryOptions && typeof pluginEntryOptions === 'object' && Object.keys(pluginEntryOptions).length === 0) {
       pluginEntryOptions = undefined;

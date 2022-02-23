@@ -35,7 +35,7 @@ export default class CssModulesProcessor {
       return;
     }
 
-    const source = {
+    let source = {
       path: file.importPath,
       contents: file.contents
     };

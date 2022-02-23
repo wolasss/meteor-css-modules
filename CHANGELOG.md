@@ -176,7 +176,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.1.3] - 2016-07-26
 ### Fixed
-- Updated to nathantreid:css-modules-import-path-helpers@0.1.4 to fix issues with importing files from Atmosphere packages
+- Updated to wolasss:css-modules-import-path-helpers@0.1.4 to fix issues with importing files from Atmosphere packages
 
 ## [2.1.2] - 2016-07-26
 ### Fixed
