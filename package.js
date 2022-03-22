@@ -22,20 +22,17 @@ Package.registerBuildPlugin({
         'css-modules-loader-core': '1.1.0',
         'json-to-regex': '0.0.2',
         'es6-template-strings': '2.0.1',
-        'hasha': '3.0.0',
         'lru-cache': '4.1.5',
-        'postcss': '8.4.6',
+        'postcss': '8.4.12',
         'postcss-modules-local-by-default': '4.0.0',
         'postcss-modules-extract-imports': '3.0.0',
         'postcss-modules-scope': '3.0.0',
         'postcss-modules-values': '2.0.0',
-        'ramda': '0.19.0',
+        'ramda': '0.28.0',
         'recursive-readdir': '2.2.2',
         'node-sass': '7.0.1',
-        '@babel/runtime': '7.17.8',
-        '@babel/plugin-transform-template-literals': '7.16.7',
         'string-template': '1.0.0',
-        'shorthash': '0.0.2'
+        '@babel/runtime': '7.17.2'
     },
     sources: [
         'logger.js',
