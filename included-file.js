@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import sha1 from './sha1';
+import { sha1 } from './utils';
 import pluginOptionsWrapper from './options';
 
 const pluginOptions = pluginOptionsWrapper.options;
@@ -76,4 +76,3 @@ export default class IncludedFile {
   }
 
 };
-

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "app-module-path": "2.2.0",
+    "shorthash": "0.0.2",
     "camelcase": "6.3.0",
     "cjson": "0.5.0",
     "node-sass": "^7.0.1",
@@ -52,7 +53,6 @@
     "postcss-modules-scope": "3.0.0",
     "postcss-modules-values": "4.0.0",
     "recursive-readdir": "2.2.2",
-    "shorthash": "0.0.2",
     "string-template": "1.0.0"
   },
   "cssModules": {

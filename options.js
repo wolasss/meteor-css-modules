@@ -2,7 +2,7 @@
 
 import * as R from 'ramda';
 import { createReplacer } from './text-replacer';
-import sha1 from './sha1';
+import { sha1 } from './utils';
 import cjson from 'cjson';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import jsonToRegex from 'json-to-regex';
