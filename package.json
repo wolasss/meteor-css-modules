@@ -39,7 +39,7 @@
     "app-module-path": "2.2.0",
     "camelcase": "6.3.0",
     "cjson": "0.5.0",
-    "colors": "1.4.0",
+    "node-sass": "^7.0.1",
     "common-tags": "^1.8.2",
     "css-modules-loader-core": "1.1.0",
     "es6-template-strings": "^2.0.1",
@@ -52,7 +52,6 @@
     "postcss-modules-scope": "3.0.0",
     "postcss-modules-values": "4.0.0",
     "recursive-readdir": "2.2.2",
-    "semver": "^7.3.5",
     "shorthash": "0.0.2",
     "string-template": "1.0.0"
   },

@@ -1,7 +1,6 @@
 // import { Meteor } from 'meteor/meteor';
 
 import * as R from 'ramda';
-import checkNpmPackage from './check-npm-package';
 import { createReplacer } from './text-replacer';
 import sha1 from './sha1';
 import cjson from 'cjson';
@@ -32,10 +31,8 @@ function getDefaultOptions() {
     enableDebugLog: false,
     enableProfiling: false,
     enableSassCompilation: ['scss', 'sass'],
-    enableLessCompilation: ['less'],
-    enableStylusCompilation: ['styl', 'm.styl'],
     explicitIncludes: [],
-    extensions: ['css', 'm.css', 'mss'],
+    extensions: ['m.css', 'mss'],
     filenames: [],
     globalVariablesText: '',
     ignorePaths: [],
@@ -83,10 +80,6 @@ function loadOptions() {
   options.includePaths = options.includePaths.map(jsonToRegex);
   options.ignorePaths = [options.defaultIgnorePath, ...options.ignorePaths].map(jsonToRegex);
 
-  checkSassCompilation(options);
-  checkLessCompilation(options);
-  checkStylusCompilation(options);
-
   return pluginOptions.options = options;
 }
 
@@ -95,43 +88,6 @@ function processCssClassNamingConventionReplacements(options) {
 
   const replacements = options.cssClassNamingConvention.replacements;
   options.cssClassNamingConvention.replacements = replacements.map(createReplacer);
-}
-
-function checkSassCompilation(options) {
-  if (!options.enableSassCompilation) {
-    return;
-  }
-
-  if (options.enableSassCompilation === true ||
-    (Array.isArray(options.enableSassCompilation) && R.intersection(options.enableSassCompilation, options.extensions).length)) {
-    const result = checkNpmPackage('node-sass@>=3.x <=4.x');
-    if (result === true) return;
-  }
-  options.enableSassCompilation = false;
-}
-
-function checkLessCompilation(options) {
-  if (!options.enableLessCompilation) return;
-
-  if (options.enableLessCompilation === true ||
-    (Array.isArray(options.enableLessCompilation) && R.intersection(options.enableLessCompilation, options.extensions).length)) {
-    const result = checkNpmPackage('less@2.x');
-    if (result === true) return;
-  }
-
-  options.enableLessCompilation = false;
-}
-
-function checkStylusCompilation(options) {
-  if (!options.enableStylusCompilation) return;
-
-  if (options.enableStylusCompilation === true ||
-    (Array.isArray(options.enableStylusCompilation) && R.intersection(options.enableStylusCompilation, options.extensions).length)) {
-    const result = checkNpmPackage('stylus@0.x');
-    if (result === true) return;
-  }
-
-  options.enableStylusCompilation = false;
 }
 
 function processGlobalVariables(options) {

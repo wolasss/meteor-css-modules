@@ -3,13 +3,17 @@ import fs from 'fs';
 import IncludedFile from './included-file';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
+import sass from 'node-sass';
+import { promisify } from 'util';
+
+const compileSass = promisify(sass.render);
 
 export default class ScssProcessor {
   constructor(pluginOptions) {
     this.fileCache = {};
     this.filesByName = null;
     this.pluginOptions = pluginOptions;
-    this.sass = pluginOptions.enableSassCompilation ? require('node-sass') : null;
+    this.sass = sass;
   }
 
   isRoot(inputFile) {
@@ -34,10 +38,10 @@ export default class ScssProcessor {
     return sassCompilationExtensions.some((extension) => file.getPathInPackage().endsWith(extension));
   }
 
-  process(file, filesByName) {
+  async process(file, filesByName) {
     this.filesByName = filesByName;
     try {
-      this._process(file);
+      await this._process(file);
     } catch (err) {
       const numberOfAdditionalLines = this.pluginOptions.globalVariablesTextLineCount
         ? this.pluginOptions.globalVariablesTextLineCount + 1
@@ -51,14 +55,14 @@ export default class ScssProcessor {
     }
   }
 
-  _process(file) {
+  async _process(file) {
     if (file.isPreprocessed) return;
 
     if (this.pluginOptions.enableDebugLog) {
       console.log(`***\nSCSS process: ${file.importPath}`);
     }
     const sourceFile = this._wrapFileForNodeSass(file);
-    const { css, sourceMap } = this._transpile(sourceFile);
+    const { css, sourceMap } = await this._transpile(sourceFile);
     file.contents = css;
     file.sourceMap = sourceMap;
     file.isPreprocessed = true;
@@ -86,7 +90,7 @@ export default class ScssProcessor {
     throw new Error(`File '${importPath}' not found at any of the following paths: ${JSON.stringify(potentialPaths, null, 2)}`);
   }
 
-  _transpile(sourceFile) {
+  async _transpile(sourceFile) {
     const sassOptions = {
       sourceMap: true,
       sourceMapContents: true,
@@ -107,7 +111,7 @@ export default class ScssProcessor {
       sassOptions.data = '$fakevariable : blue;';
     }
 
-    const output = this.sass.renderSync(sassOptions);
+    const output = await compileSass(sassOptions);
     return { css: output.css.toString('utf-8'), sourceMap: JSON.parse(output.map.toString('utf-8')) };
   }
 

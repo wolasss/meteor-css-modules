@@ -14,7 +14,6 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 import ScssProcessor from './scss-processor';
 import CssModulesProcessor from './css-modules-processor';
-import { stripIndent } from 'common-tags';
 import proxyquire from 'proxyquire';
 import { MultiFileCachingCompiler } from './test-helpers/multi-file-caching-compiler';
 
@@ -489,7 +488,7 @@ describe('CssModulesBuildPlugin', function() {
 
             const result = buildPlugin.compileOneFile(file);
 
-            expect(result.compileResult.javascript).to.equal(stripIndent`
+            expect(result.compileResult.javascript).to.equal(`
                 const styles = {"test":"TEST"};
                 export { styles as default, styles };
                 `);
@@ -509,7 +508,7 @@ describe('CssModulesBuildPlugin', function() {
 
             const result = buildPlugin.compileOneFile(file);
 
-            expect(result.compileResult.javascript).to.equal(stripIndent`
+            expect(result.compileResult.javascript).to.equal(`
                 import './a.css';
                 import './b/b.css';
                 `);
@@ -528,7 +527,7 @@ describe('CssModulesBuildPlugin', function() {
 
             const result = buildPlugin.compileOneFile(file);
 
-            expect(result.compileResult.javascript).to.equal(stripIndent`
+            expect(result.compileResult.javascript).to.equal(`
                 import modules from 'meteor/modules';
                 modules.addStyles(".test { color: red; }");
                 `);
@@ -549,7 +548,7 @@ describe('CssModulesBuildPlugin', function() {
 
             const result = buildPlugin.compileOneFile(file);
 
-            expect(result.compileResult.javascript).to.equal(stripIndent`
+            expect(result.compileResult.javascript).to.equal(`
                 import './a.css';
                 import './b/b.css';
                 import modules from 'meteor/modules';

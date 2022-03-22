@@ -12,6 +12,7 @@
     "comma-dangle": "off",
     "generator-star-spacing": "off",
     "no-return-assign": "off",
+    "indent": ["error", 4],
     "no-trailing-spaces": [
       "error",
       {

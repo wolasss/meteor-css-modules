@@ -1,3 +1,3 @@
 export default {
-  onCssModuleMissingStyle: undefined,
+    onCssModuleMissingStyle: undefined,
 };

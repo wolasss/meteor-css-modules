@@ -6,15 +6,12 @@ import { Babel } from 'meteor/babel-compiler';
 
 import recursiveUnwrapped from 'recursive-readdir';
 import ScssProcessor from './scss-processor';
-import LessProcessor from './less-processor';
-import StylusProcessor from './stylus-processor';
 import CssModulesProcessor from './css-modules-processor';
 import IncludedFile from './included-file';
 import pluginOptionsWrapper, { reloadOptions } from './options';
 import getOutputPath from './get-output-path';
 import profile from './helpers/profile';
 import ImportPathHelpers from './helpers/import-path-helpers';
-import { stripIndent, stripIndents } from 'common-tags';
 
 let pluginOptions = pluginOptionsWrapper.options;
 const recursive = Meteor.wrapAsync(recursiveUnwrapped);
@@ -58,6 +55,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
 
   async processFilesForTarget(files) {
     pluginOptions = this.reloadOptions();
+    console.log(pluginOptions);
     if (!pluginOptions.cache.enableCache) {
       this._cache.reset();
     }
@@ -73,7 +71,8 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     files = removeFilesFromExcludedFolders(files);
     files = addFilesFromIncludedFolders(files);
 
-    this._setupPreprocessors();
+    this.preprocessors = [];
+    this.preprocessors.push(new ScssProcessor(pluginOptions));
     this.cssModulesProcessor = new CssModulesProcessor(pluginOptions, this);
 
     await super.processFilesForTarget(files);
@@ -121,19 +120,6 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     });
   }
 
-  _setupPreprocessors() {
-    this.preprocessors = [];
-    if (pluginOptions.enableSassCompilation) {
-      this.preprocessors.push(new ScssProcessor(pluginOptions));
-    }
-    if (pluginOptions.enableStylusCompilation) {
-      this.preprocessors.push(new StylusProcessor(pluginOptions));
-    }
-    if (pluginOptions.enableLessCompilation) {
-      this.preprocessors.push(new LessProcessor(pluginOptions));
-    }
-  }
-
   isRoot(inputFile) {
     if ('isRoot' in inputFile) {
       return inputFile.isRoot;
@@ -156,11 +142,11 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     return inputFile.isRoot;
   }
 
-  compileOneFile(inputFile) {
+  async compileOneFile(inputFile) {
     const filesByName = this.filesByName;
 
     this._prepInputFile(inputFile);
-    this._preprocessFile(inputFile, filesByName);
+    await this._preprocessFile(inputFile, filesByName);
     if (inputFile.transpileCssModules !== false) {
       this._transpileCssModulesToCss(inputFile, filesByName).await();
     }
@@ -169,7 +155,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     return { compileResult, referencedImportPaths: inputFile.referencedImportPaths };
   }
 
-  compileFromSource(source, backingInputFile, { transpileCssModules = true } = {}) {
+  async compileFromSource(source, backingInputFile, { transpileCssModules = true } = {}) {
     pluginOptions = this.reloadOptions();
     if (!pluginOptions.cache.enableCache) {
       this._cache.reset();
@@ -186,7 +172,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     const inputFile = this._createIncludedFile(backingInputFile.getPathInPackage(), backingInputFile, source);
 
     inputFile.transpileCssModules = transpileCssModules;
-    return this.compileOneFile(inputFile, this.filesByName);
+    return await this.compileOneFile(inputFile, this.filesByName);
   }
 
   _createIncludedFile(importPath, rootFile, contents) {
@@ -234,7 +220,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
 
     const shouldAddStylesheet = inputFile.getArch().indexOf('web') === 0;
     compileResult.stylesheetCode = (isLazy && shouldAddStylesheet && inputFile.contents)
-      ? tryBabelCompile(stripIndent`
+      ? tryBabelCompile(`
          import modules from 'meteor/modules';
 				 modules.addStyles(${JSON.stringify(inputFile.contents)});`)
       : '';
@@ -243,7 +229,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     const isLegacy = inputFile.getArch() === 'web.browser.legacy';
     compileResult.stylesCode = inputFile.tokens ? addMissingStylesHandler(JSON.stringify(inputFile.tokens), filePath, isLegacy) : '';
     compileResult.tokensCode = inputFile.tokens
-      ? tryBabelCompile(stripIndent`
+      ? tryBabelCompile(`
          const styles = ${compileResult.stylesCode};
          export { styles as default, styles };
          exports.__esModule = true;`, diskCache)
@@ -312,9 +298,9 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     file.isPrepped = true;
   }
 
-  _preprocessFile(inputFile, filesByName) {
+  async _preprocessFile(inputFile, filesByName) {
     if (inputFile.preprocessor) {
-      inputFile.preprocessor.process(inputFile, filesByName);
+      await inputFile.preprocessor.process(inputFile, filesByName);
     }
   }
 
@@ -340,7 +326,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
     }
 
     const js = (result.importsCode || result.stylesheetCode || result.tokensCode)
-      ? stripIndents`
+      ? `
 					${result.importsCode}
 					${isWebArchitecture ? result.stylesheetCode : ''}
 					${result.tokensCode}`
