@@ -16,7 +16,7 @@ Or, as stated on the main CSS modules page:
 Install using Meteor's package management system:
 
 ```bash
-meteor add wolasss:css-modules
+meteor add wolas:scss-modules
 ```
 
 By default, this plugin will handle .css files as well as .m.css and .mss files (legacy). This can be adjusted in the [package options](https://github.com/nathantreid/meteor-css-modules/wiki/Package-Options).
