@@ -27,7 +27,7 @@ Package.registerBuildPlugin({
         'postcss-modules-scope': '3.0.0',
         'postcss-modules-values': '2.0.0',
         'ramda': '0.28.0',
-        'sass': '1.43.4',
+        'sass-embedded': '1.58.3',
         'recursive-readdir': '2.2.3',
         'string-template': '1.0.0',
         '@babel/runtime': '7.17.2'

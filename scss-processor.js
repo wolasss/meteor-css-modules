@@ -3,10 +3,8 @@ import fs from 'fs';
 import IncludedFile from './included-file';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
-import sass from 'sass';
-import { promisify } from 'util';
-
-const compileSass = promisify(sass.render);
+import sass from 'sass-embedded';
+import url from 'url';
 
 export default class ScssProcessor {
   constructor(pluginOptions) {
@@ -64,7 +62,7 @@ export default class ScssProcessor {
       console.log(`***\nSCSS process: ${file.importPath}`);
     }
     const sourceFile = this._wrapFileForNodeSass(file);
-    const { css, sourceMap } = await this._transpile(sourceFile);
+    const { css, sourceMap } = this._transpile(sourceFile);
     file.contents = css;
     file.sourceMap = sourceMap;
     file.isPreprocessed = true;
@@ -74,78 +72,25 @@ export default class ScssProcessor {
     return { path: file.importPath, contents: file.rawContents, file: file };
   }
 
-  _discoverImportPath(importPath) {
-    const potentialPaths = [importPath];
-    const potentialFileExtensions = this.pluginOptions.enableSassCompilation === true ? this.pluginOptions.extensions : this.pluginOptions.enableSassCompilation;
-
-      potentialFileExtensions.forEach(extension => potentialPaths.push(`${importPath}.${extension}`));
-    if (path.basename(importPath)[0] !== '_') {
-      [].concat(potentialPaths).forEach(potentialPath => potentialPaths.push(`${path.dirname(potentialPath)}/_${path.basename(potentialPath)}`));
-    }
-
-    for (let i = 0, potentialPath = potentialPaths[i]; i < potentialPaths.length; i++, potentialPath = potentialPaths[i]) {
-      if (this.filesByName.has(potentialPath) || (fs.existsSync(potentialPaths[i]) && fs.lstatSync(potentialPaths[i]).isFile())) {
-        return potentialPath;
-      }
-    }
-
-    throw new Error(`File '${importPath}' not found at any of the following paths: ${JSON.stringify(potentialPaths, null, 2)}`);
-  }
-
-  async _transpile(sourceFile) {
+  _transpile(sourceFile) {
     const sassOptions = {
       sourceMap: true,
-      sourceMapContents: true,
-      sourceMapEmbed: false,
-      sourceComments: false,
-      sourceMapRoot: '.',
-      omitSourceMapUrl: true,
-      indentedSyntax: sourceFile.file.getExtension() === 'sass',
-      outFile: `.${sourceFile.file.getBasename()}`,
-      importer: this._importFile.bind(this, sourceFile),
-      includePaths: [],
-      file: sourceFile.path,
-      data: sourceFile.contents
+      sourceMapIncludeSources: true,
+      charset: 'utf-8',
+      loadPaths: [],
+      verbose: true,
+      importers: [{
+        findFileUrl(_url) {
+            if (!decodeURI(_url).startsWith('{}')) return null;
+            const finalPath = process.cwd().toString() + decodeURI(_url).substring(2).toString();
+
+            return new URL(url.pathToFileURL(finalPath));
+        }
+      }]
     };
 
-    /* Empty options.data workaround from fourseven:scss */
-    if (!sassOptions.data.trim()) {
-      sassOptions.data = '$fakevariable : blue;';
-    }
+    const { css, sourceMap } = sass.compileString(sourceFile.contents, sassOptions);
 
-    const output = await compileSass(sassOptions);
-    return { css: output.css.toString('utf-8'), sourceMap: JSON.parse(output.map.toString('utf-8')) };
+    return { css, sourceMap: sourceMap };
   }
-
-  _importFile(rootFile, sourceFilePath, relativeTo) {
-    try {
-      if (this.pluginOptions.enableDebugLog) {
-        console.log(`***\nImport: ${sourceFilePath}\n rootFile: ${rootFile}`);
-      }
-      let importPath = ImportPathHelpers.getImportPathRelativeToFile(sourceFilePath, relativeTo);
-      importPath = this._discoverImportPath(importPath);
-      let inputFile = this.filesByName.get(importPath);
-      if (inputFile) {
-        rootFile.file.referencedImportPaths.push(importPath);
-      } else {
-        inputFile = this._createIncludedFile(importPath, rootFile);
-      }
-
-      return this._wrapFileForNodeSassImport(inputFile, importPath);
-    } catch (err) {
-      return err;
-    }
-  }
-
-  _createIncludedFile(importPath, rootFile) {
-    const file = new IncludedFile(importPath, rootFile);
-    file.prepInputFile();
-    this.filesByName.set(importPath, file);
-    return file;
-  }
-
-  _wrapFileForNodeSassImport(file, importPath) {
-    return { contents: file.rawContents, file: file.importPath || importPath };
-  }
-
 };
