@@ -3,7 +3,7 @@ import fs from 'fs';
 import IncludedFile from './included-file';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
-import sass from 'node-sass';
+import sass from 'sass';
 import { promisify } from 'util';
 
 const compileSass = promisify(sass.render);
@@ -43,6 +43,8 @@ export default class ScssProcessor {
     try {
       await this._process(file);
     } catch (err) {
+        console.error(err);
+
       const numberOfAdditionalLines = this.pluginOptions.globalVariablesTextLineCount
         ? this.pluginOptions.globalVariablesTextLineCount + 1
         : 0;

@@ -56,7 +56,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
   async processFilesForTarget(files) {
     pluginOptions = this.reloadOptions();
     if (!pluginOptions.cache.enableCache) {
-      this._cache.reset();
+      this._cache.clear();
     }
     this.optionsHash = pluginOptions.hash;
     const start = profile();
@@ -157,7 +157,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
   async compileFromSource(source, backingInputFile, { transpileCssModules = true } = {}) {
     pluginOptions = this.reloadOptions();
     if (!pluginOptions.cache.enableCache) {
-      this._cache.reset();
+      this._cache.clear();
     }
     if (pluginOptions.enableDebugLog) {
       console.log(`***\nCompile from source: ${source}\n filename: ${backingInputFile.getPathInPackage()}`);
