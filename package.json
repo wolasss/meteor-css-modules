@@ -24,8 +24,7 @@
     "postcss-modules-values": "4.0.0",
     "ramda": "0.28.0",
     "recursive-readdir": "2.2.3",
-    "sass": "1.58.3",
-    "sass-embedded": "^1.58.3",
+    "sass-embedded": "1.58.3",
     "string-template": "1.0.0"
   }
 }

@@ -91,6 +91,6 @@ export default class ScssProcessor {
 
     const { css, sourceMap } = sass.compileString(sourceFile.contents, sassOptions);
 
-    return { css, sourceMap: sourceMap };
+    return { css, sourceMap };
   }
 };
