@@ -36,7 +36,7 @@ class FileMap extends Map {
 export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
   constructor() {
     super({
-      compilerName: 'mss',
+      compilerName: 'scss-compiler',
       defaultCacheSize: 1024 * 1024 * 10
     });
     this.profilingResults = {
@@ -56,7 +56,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
   async processFilesForTarget(files) {
     pluginOptions = this.reloadOptions();
     if (!pluginOptions.cache.enableCache) {
-      this._cache.clear();
+      this._cache.reset();
     }
     this.optionsHash = pluginOptions.hash;
     const start = profile();
@@ -157,7 +157,7 @@ export default class CssModulesBuildPlugin extends MultiFileCachingCompiler {
   async compileFromSource(source, backingInputFile, { transpileCssModules = true } = {}) {
     pluginOptions = this.reloadOptions();
     if (!pluginOptions.cache.enableCache) {
-      this._cache.clear();
+      this._cache.reset();
     }
     if (pluginOptions.enableDebugLog) {
       console.log(`***\nCompile from source: ${source}\n filename: ${backingInputFile.getPathInPackage()}`);

@@ -30,7 +30,9 @@ Package.registerBuildPlugin({
         'sass-embedded': '1.58.3',
         'recursive-readdir': '2.2.3',
         'string-template': '1.0.0',
-        '@babel/runtime': '7.17.2'
+        '@babel/runtime': '7.17.2',
+        'node-sass': '8.0.0',
+        'lru-cache': '6.0.0'
     },
     sources: [
         'logger.js',
