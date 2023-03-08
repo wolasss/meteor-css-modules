@@ -79,7 +79,7 @@ export default class ScssProcessor {
     async _transpile(sourceFile) {
         const sassOptions = {
             sourceMap: Meteor.isProduction ? false : true,
-            sourceMapContents: true,
+            sourceMapContents: Meteor.isProduction ? false : true,
             sourceMapEmbed: false,
             sourceComments: false,
             sourceMapRoot: '.',
@@ -96,9 +96,16 @@ export default class ScssProcessor {
         if (!sassOptions.data.trim()) {
             sassOptions.data = '$fakevariable : blue;';
         }
-
-        const output = await compileSass(sassOptions);
-        return { css: output.css.toString('utf-8'), sourceMap: JSON.parse(output.map.toString('utf-8')) };
+        try {
+            const output = await compileSass(sassOptions);
+            return { css: output.css.toString('utf-8'), sourceMap: output && output.map && JSON.parse(output.map.toString('utf-8')) };
+        } catch(err) {
+            logger.error(`\n/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`);
+            logger.error(`Processing Step: SCSS compilation`);
+            logger.error(`Unable to compile ${sourceFile.path}`);
+            logger.error(`Error:  ${err.message}`);
+            logger.error(`\n/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`);
+        }
     }
 
     _importFile(rootFile, sourceFilePath, relativeTo) {
