@@ -87,7 +87,6 @@ export default class ScssProcessor {
 
                     let importPath = ImportPathHelpers.getImportPathRelativeToFile(decodeURI(path), sourceFile.file.importPath);
                     importPath = !importPath.endsWith('.scss') ? importPath + '.scss' : importPath;
-                    console.log('findFIleUrl', importPath, pathToFileURL(importPath));
 
                     return pathToFileURL(importPath);
                 }
