@@ -3,12 +3,9 @@ import fs from 'fs';
 import IncludedFile from './included-file';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
-import sass from 'node-sass';
-import { promisify } from 'util';
+import sass from 'sass-embedded';
 import LRU from 'lru-cache';
 import { Meteor } from 'meteor/meteor';
-
-const compileSass = promisify(sass.render);
 
 export default class ScssProcessor {
     constructor(pluginOptions) {
@@ -97,7 +94,7 @@ export default class ScssProcessor {
             sassOptions.data = '$fakevariable : blue;';
         }
         try {
-            const output = await compileSass(sassOptions);
+            const output = await sass.renderAsync(sassOptions);
             return { css: output.css.toString('utf-8'), sourceMap: output && output.map && JSON.parse(output.map.toString('utf-8')) };
         } catch(err) {
             logger.error(`\n/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`);
