@@ -16,7 +16,7 @@ Package.registerBuildPlugin({
     ],
     npmDependencies: {
         'app-module-path': '2.2.0',
-        'camelcase': '8.0.8',
+        'camelcase': '8.0.0',
         'cjson': '0.5.0',
         'css-modules-loader-core': '1.1.0',
         'json-to-regex': '0.0.2',
@@ -31,8 +31,7 @@ Package.registerBuildPlugin({
         'recursive-readdir': '2.2.3',
         'string-template': '1.0.0',
         '@babel/runtime': '7.17.2',
-        'sass-embedded': '1.80.5',
-        'lru-cache': '8.0.5'
+        'sass-embedded': '1.80.5'
     },
     sources: [
         'logger.js',

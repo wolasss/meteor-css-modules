@@ -1,20 +1,19 @@
 import path from 'path';
-import fs from 'fs';
 import IncludedFile from './included-file';
 import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
 import sass from 'sass-embedded';
-import LRU from 'lru-cache';
 import { Meteor } from 'meteor/meteor';
 
 export default class ScssProcessor {
     constructor(pluginOptions) {
-        this.fileCache = new LRU({
-            size: 1024 * 1024 * 10
-        });
+        this.fileCache = {};
         this.filesByName = null;
         this.pluginOptions = pluginOptions;
-        this.sass = sass;
+    }
+
+    async init() {
+        this.compiler = await sass.initAsyncCompiler();
     }
 
     isRoot(inputFile) {
@@ -81,20 +80,14 @@ export default class ScssProcessor {
             sourceComments: false,
             sourceMapRoot: '.',
             omitSourceMapUrl: true,
-            indentedSyntax: sourceFile.file.getExtension() === 'sass',
             outFile: `.${sourceFile.file.getBasename()}`,
             importer: this._importFile.bind(this, sourceFile),
             includePaths: [],
-            file: sourceFile.path,
-            data: sourceFile.contents
         };
 
-        /* Empty options.data workaround from fourseven:scss */
-        if (!sassOptions.data.trim()) {
-            sassOptions.data = '$fakevariable : blue;';
-        }
         try {
-            const output = await sass.renderAsync(sassOptions);
+            const output = await this.compiler.compileStringAsync(sourceFile.contents, sassOptions);
+
             return { css: output.css.toString('utf-8'), sourceMap: output && output.map && JSON.parse(output.map.toString('utf-8')) };
         } catch(err) {
             logger.error(`\n/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`);

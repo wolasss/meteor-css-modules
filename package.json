@@ -15,7 +15,6 @@
     "css-modules-loader-core": "1.1.0",
     "es6-template-strings": "2.0.1",
     "json-to-regex": "0.0.2",
-    "lru-cache": "8.0.5",
     "postcss": "8.4.47",
     "postcss-modules-extract-imports": "3.1.0",
     "postcss-modules-local-by-default": "4.0.5",
