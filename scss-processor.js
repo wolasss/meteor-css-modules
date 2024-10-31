@@ -4,6 +4,7 @@ import ImportPathHelpers from './helpers/import-path-helpers';
 import logger from './logger';
 import sass from 'sass-embedded';
 import { Meteor } from 'meteor/meteor';
+import { pathToFileURL } from 'url';
 
 export default class ScssProcessor {
     constructor(pluginOptions) {
@@ -81,7 +82,16 @@ export default class ScssProcessor {
             sourceMapRoot: '.',
             omitSourceMapUrl: true,
             outFile: `.${sourceFile.file.getBasename()}`,
-            importer: this._importFile.bind(this, sourceFile),
+            importer: {
+                findFileUrl: function(path) {
+
+                    let importPath = ImportPathHelpers.getImportPathRelativeToFile(decodeURI(path), sourceFile.file.importPath);
+                    importPath = !importPath.endsWith('.scss') ? importPath + '.scss' : importPath;
+                    console.log('findFIleUrl', importPath, pathToFileURL(importPath));
+
+                    return pathToFileURL(importPath);
+                }
+            },
             includePaths: [],
         };
 

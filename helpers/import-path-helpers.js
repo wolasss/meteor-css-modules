@@ -54,6 +54,7 @@ export default {
     },
 
     getImportPathRelativeToFile: function getRealImportPath(importPath, relativeTo) {
+        // url decode the import path
         importPath = importPath.replace(/^["']|["']$/g, '');
         if (importPath[0] === '~') {
             return getModulePath(importPath.substring(1));
@@ -72,8 +73,13 @@ export default {
             importPath = path.join(path.dirname(relativeTo), importPath);
         }
 
+        console.log('importPath 1', importPath);
+
         importPath = convertCurlySyntaxToAbsolutePath(importPath);
+        console.log('importPath 2', importPath);
+
         importPath = convertMeteorPackageSyntaxToAbsolutePath(importPath);
+        console.log('importPath 3', importPath);
 
         return importPath.replace(/\\/g, '/');
 

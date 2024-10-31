@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
     name: 'wolas:scss-modules',
-    version: '7.0.0',
+    version: '7.0.3',
     summary: 'CSS modules implementation. CSS for components!',
     git: 'https://github.com/wolasss/meteor-css-modules',
     documentation: 'README.md'
