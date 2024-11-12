@@ -23,6 +23,7 @@
     "ramda": "0.30.1",
     "recursive-readdir": "2.2.3",
     "sass-embedded": "1.80.5",
+    "sass-embedded-darwin-arm64": "1.80.6",
     "string-template": "1.0.0"
   }
 }

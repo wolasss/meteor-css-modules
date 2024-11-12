@@ -1,7 +1,7 @@
 /* globals Package */
 Package.describe({
     name: 'wolas:scss-modules',
-    version: '7.0.3',
+    version: '7.0.5',
     summary: 'CSS modules implementation. CSS for components!',
     git: 'https://github.com/wolasss/meteor-css-modules',
     documentation: 'README.md'
@@ -28,6 +28,7 @@ Package.registerBuildPlugin({
         'postcss-modules-values': '4.0.0',
         'ramda': '0.30.1',
         'sass-embedded': '1.58.3',
+        'sass-embedded-darwin-arm64': '1.80.6',
         'recursive-readdir': '2.2.3',
         'string-template': '1.0.0',
         '@babel/runtime': '7.17.2',
