@@ -3,6 +3,11 @@ import CssModulesBuildPlugin from './css-modules-build-plugin';
 import pluginOptionsWrapper from './options';
 import ImportPathHelpers from './helpers/import-path-helpers';
 
+// if architecture is different than darwin arm return
+if (process.platform !== 'darwin' || process.arch !== 'arm64') {
+    return;
+}
+
 const pluginOptions = pluginOptionsWrapper.options;
 
 ImportPathHelpers.init(Plugin);
